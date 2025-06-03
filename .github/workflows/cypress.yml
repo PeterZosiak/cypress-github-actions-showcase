@@ -2,15 +2,20 @@ name: Cypress E2E Tests
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
     inputs:
-      browser:
-        description: "Browser to run tests against"
+      spec:
+        description: 'Spec file(s) to run (optional, runs all if empty)'
         required: false
-        default: "chrome"
+        default: ''
+        type: string
+      browser:
+        description: 'Browser to run tests against'
+        required: false
+        default: 'chrome'
         type: string
 
 jobs:
@@ -39,15 +44,16 @@ jobs:
 
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           browser: ${{ matrix.browser }}
+          spec: ${{ github.event.inputs.spec }}
           record: true
           group: 'E2E on ${{ matrix.browser }}'
           tag: ${{ github.event_name }}
           parallel: false
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN:        ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload screenshots on failure
         if: failure()
