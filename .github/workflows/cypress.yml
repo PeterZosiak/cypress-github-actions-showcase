@@ -7,11 +7,6 @@ on:
       - master
   workflow_dispatch:
     inputs:
-      spec:
-        description: "Spec file to run (optional - runs all if empty)"
-        required: false
-        default: ""
-        type: string
       browser:
         description: "Browser to run tests against"
         required: false
@@ -49,7 +44,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           browser: ${{ matrix.browser }}
-          spec: ${{ github.event.inputs.spec }}
           record: true
           group: 'E2E on ${{ matrix.browser }}'
           tag: ${{ github.event_name }}
